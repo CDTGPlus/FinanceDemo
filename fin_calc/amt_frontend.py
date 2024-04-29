@@ -1,46 +1,37 @@
 import streamlit as st
 import pandas as pd
-import amt_backend
+from amt_backend import *
 
 
-page_icon = ':compass:'
+page_icon = ':dollar:'
 st.set_page_config(page_icon=page_icon)
 
-option = st.selectbox('Select Financial Function',('Amortization Schedule','Payment Calculator'))
+st.title('Amortization Schedule :money_with_wings:')
 
-if option == 'Amortization Schedule':
+option = st.selectbox('Select Payment Frequency',('Yearly','Monthly'))
 
-
-    st.title('Amortization Schedule :money_with_wings:')
-
-    principal = st.number_input('Enter Loan Principal:',format="%.2f")
-    period_payment = st.number_input('Enter Payment amount per period:',format="%.2f")
-    interest = st.number_input('Enter Interest Rate')
-
-    if period_payment and principal and interest:
-        check = principal * (interest/100)
-        if check >= period_payment:
-            st.write('Error: Payment Per Period is not enough to cover amortization expenses :umbrella_with_rain_drops:')
-        else:
-            
-            amortization_schedule = amt_backend.loan_amt(period_payment,principal,interest)
-            df = amortization_schedule.new_amt()
-            st.write('Total Interest Paid: $',round(amortization_schedule.int_paid,2))
-            st.write('Total Cost of Loan $',round(amortization_schedule.cost_of_loan,2))
-            st.table(df.style.format({col: '{:.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
-
-            # st.table(df.style.format({col: '{:.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
+if option == 'Yearly':
+    freq = 'yearly'
 else:
+    freq = 'monthly'
 
-    st.title('Period Payment Calculator :dollar:')
 
-    principal = st.number_input('Enter Loan Principal:',format="%.2f")
-    interest = st.number_input('Enter Interest Rate',format="%.2f")
-    periods = st.number_input('Enter Number of Payment Periods')
+principal = st.number_input('Enter Loan Principal:',format="%.2f")
+payment_period = st.number_input('Enter loan term in years:',format="%.2f")
+interest = st.number_input('Enter Interest Rate')
 
-    if principal and interest and periods:
-        payment = amt_backend.payment(principal,interest,periods)
-        st.write('The recommened payment per scheduled period is $:',round(payment.calc_payment(),2))
+if principal and payment_period and interest:
+    amt = amortization_schedule(principal,payment_period,interest,freq)
+    st.write('Montly Payment: $',amt.monthly_payment)
+    st.write('Total paid: $',amt.total_paid)
+    st.write('Total Interest: $',amt.interest_paid)
+    st.plotly_chart(amt.graph)
+    df = amt.schedule
+    st.table(df.style.format({col: '{:.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
 
-st.cache_data.clear()
+else:
+    st.write('Enter Complete Data')
+    
+
+# st.cache_data.clear()
 

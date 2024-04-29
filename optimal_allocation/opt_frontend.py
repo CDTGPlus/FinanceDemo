@@ -18,21 +18,24 @@ if  stocks and funds:
     portfolio = opt_backend.combine_stocks(pf_list,start,end)
 
     st.dataframe(portfolio)
-    
-    invested = opt_backend.eff_alc(portfolio)
-    invested.allocate_amt(val)
-    performance = invested.performance
-    st.write('Expected performance')
-    st.write('Annual Return Return: {:.2f}%'.format(performance[0]*100))
-    st.write('Annual Volatility: {:.2f}%'.format(performance[1]*100))
-    st.write('Sharpe Ratio: {:.2f}%'.format(performance[2]))
-    #st.write(invested.ef.portfolio_performance(verbose=True))
-    st.write('Scheduled Allocation')
-    allocation = [f'{x}: {y}' for x,y in invested.allocation.items()]
-    for al in allocation:
-        st.write(al)
-    #st.text('Leftover amount in portfolio')
-    st.write("Funds remaining: ${:.2f}".format(invested.leftover)) 
+    try:
+        invested = opt_backend.eff_alc(portfolio)
+        invested.allocate_amt(val)
+        performance = invested.performance
+        st.write('Expected performance')
+        st.write('Annual Return Return: {:.2f}%'.format(performance[0]*100))
+        st.write('Annual Volatility: {:.2f}%'.format(performance[1]*100))
+        st.write('Sharpe Ratio: {:.2f}%'.format(performance[2]))
+        #st.write(invested.ef.portfolio_performance(verbose=True))
+        st.write('Scheduled Allocation')
+        allocation = [f'{x}: {y}' for x,y in invested.allocation.items()]
+        for al in allocation:
+            st.write(al)
+        #st.text('Leftover amount in portfolio')
+        st.write("Funds remaining: ${:.2f}".format(invested.leftover))
+    except ValueError as e:
+        st.write('Error:'+str(e))
+         
     
 
 
