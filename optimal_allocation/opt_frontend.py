@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import opt_backend
 
-#st.cache_data.clear()
 st.title('Portfolio Optimization Manager')
 
 stocks = st.text_input('Enter stock tickers to be used in portfolio')
@@ -13,30 +12,44 @@ funds = st.number_input('Enter amount to be invested')
 
 pf_list = opt_backend.stock_parse(stocks)
 val = funds
-
+# Initialize once funds(amount) and stocks have been entered by user
 if  stocks and funds:
     portfolio = opt_backend.combine_stocks(pf_list,start,end)
-
-    st.dataframe(portfolio)
+    investment = opt_backend.eff_alc(portfolio,val)
     try:
-        invested = opt_backend.eff_alc(portfolio)
-        invested.allocate_amt(val)
-        performance = invested.performance
+    
+        performance = investment.performance
+        # Dsiplay summary statistics for portfolio; return, allocation
         st.write('Expected performance')
         st.write('Annual Return Return: {:.2f}%'.format(performance[0]*100))
         st.write('Annual Volatility: {:.2f}%'.format(performance[1]*100))
         st.write('Sharpe Ratio: {:.2f}%'.format(performance[2]))
-        #st.write(invested.ef.portfolio_performance(verbose=True))
-        st.write('Scheduled Allocation')
-        allocation = [f'{x}: {y}' for x,y in invested.allocation.items()]
+        st.write('Scheduled Allocation:')
+        allocation = [f'{x}: {y}' for x,y in investment.allocation.items()]
         for al in allocation:
             st.write(al)
-        #st.text('Leftover amount in portfolio')
-        st.write("Funds remaining: ${:.2f}".format(invested.leftover))
+        st.write("Funds remaining: ${:.2f}".format(investment.leftover))
+        #display asset allocation for portfolio
+        st.plotly_chart(investment.pie_graph)
+        #for price history, switch between line chart and data frame
+        # if toggle does not exist, inittialize it
+        if 'price_view' not in st.session_state:
+            st.session_state.price_view = False
+        # Toggle the price_view state when the button is clicked
+        if st.button('Switch Price History View'):
+            st.session_state.price_view = not st.session_state.price_view
+
+        # Display the appropriate view based on the toggle state
+        if st.session_state.price_view:
+            st.dataframe(portfolio)
+        else:
+            st.plotly_chart(investment.price_graph)
     except ValueError as e:
-        st.write('Error:'+str(e))
+        st.write('Data not valid')
+
+else:
+    st.write("Enter complete data")
          
     
-
 
 st.cache_data.clear()
