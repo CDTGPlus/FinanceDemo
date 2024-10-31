@@ -18,7 +18,8 @@ def stock_parse(x):
 #extract closing price for stock using yahoo finance library
 def get_stock(ticker,start,end):
     try:
-        data = yf.download(f'{ticker}',start=start,end=end)['Close'].to_frame(f'{ticker}')
+        # data = yf.download(f'{ticker}',start=start,end=end)['Close'].to_frame(f'{ticker}')
+        data = yf.download(f'{ticker}',start=start,end=end)['Close']
     except TypeError:
         pass
     return data 

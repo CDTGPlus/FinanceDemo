@@ -21,7 +21,7 @@ if  stocks and funds:
         performance = investment.performance
         # Dsiplay summary statistics for portfolio; return, allocation
         st.write('Expected performance')
-        st.write('Annual Return Return: {:.2f}%'.format(performance[0]*100))
+        st.write('Annual Return: {:.2f}%'.format(performance[0]*100))
         st.write('Annual Volatility: {:.2f}%'.format(performance[1]*100))
         st.write('Sharpe Ratio: {:.2f}%'.format(performance[2]))
         st.write('Scheduled Allocation:')
