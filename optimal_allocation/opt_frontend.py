@@ -4,7 +4,7 @@ import opt_backend
 
 st.title('Portfolio Optimization Manager')
 
-stocks = st.text_input('Enter stock tickers to be used in portfolio')
+stocks = st.text_area('Enter stock tickers to be used in portfolio')
 start = st.date_input('Start', value = pd.to_datetime('2021-01-01'))
 end = st.date_input('End', value=pd.to_datetime('today'))
 

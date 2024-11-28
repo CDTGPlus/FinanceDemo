@@ -11,8 +11,8 @@ from pypfopt.discrete_allocation import DiscreteAllocation, get_latest_prices
 # Parse user input, limit portfolio length to 10 assets
 def stock_parse(x):
     alpha = x.split(',')
-    if len(alpha) > 10:
-        alpha = alpha[:10]
+    if len(alpha) > 25:
+        alpha = alpha[:25]
     return [s.upper() for s in alpha]
 
 #extract closing price for stock using yahoo finance library
