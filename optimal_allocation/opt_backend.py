@@ -20,8 +20,8 @@ def get_stock(ticker,start,end):
     try:
         # data = yf.download(f'{ticker}',start=start,end=end)['Close'].to_frame(f'{ticker}')
         data = yf.download(f'{ticker}',start=start,end=end)['Close']
-    except TypeError:
-        pass
+    except ValueError as e:
+        print(f"Error fetching data for {ticker}: {e}")
     return data 
 
 # method to merge closing prices of distinct assets into single data frame
@@ -37,22 +37,38 @@ def combine_stocks(tickers,start,end):
 # Efficient allocation object
 class eff_alc:
     
-    def __init__(self,portfolio,ammount):
+    def __init__(self,portfolio,ammount,risk_tolerance=50):
         self.portfolio = portfolio
         self.ammount = ammount
+        self.risk_tolerance = risk_tolerance
 
         self.mu = mean_historical_return(self.portfolio)
         self.S = CovarianceShrinkage(self.portfolio).ledoit_wolf()
 
         self.ef = EfficientFrontier(self.mu, self.S)
-        self.weights = self.ef.max_sharpe()
+        self.weights = self.optimize_portfolio()
 
         self.performance = self.ef.portfolio_performance(verbose=False)
 
         self.allocation, self.leftover = self.allocate_amt(self.ammount)
         self.pie_graph = self.allocation_pie_graph(self.allocation)
         self.price_graph = self.asset_price_graph(self.portfolio)
-    # Investment allocation method
+
+    # Optimal allocation based on risk tolerance 
+    def optimize_portfolio(self):
+        if self.risk_tolerance < 30:
+            # Risk-averse: Minimize volatility
+            self.ef.min_volatility()
+        elif self.risk_tolerance > 70:
+            # High risk tolerance: Maximize Sharpe ratio
+            self.ef.max_sharpe()
+        else:
+            #dynamically calculate volatility based on user's designated risk tolerance
+            target_volatility = 0.1 + (self.risk_tolerance - 30) / 40 * (0.25 - 0.1)
+            self.ef.efficient_risk(target_volatility)
+        return self.ef.clean_weights()
+
+    # Investment allocation method (based on weights)
     def allocate_amt(self,funds):
         latest_prices = get_latest_prices(self.portfolio)
         da = DiscreteAllocation(self.weights, latest_prices, total_portfolio_value=funds)
