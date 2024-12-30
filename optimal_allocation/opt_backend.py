@@ -46,6 +46,7 @@ class eff_alc:
         self.S = CovarianceShrinkage(self.portfolio).ledoit_wolf()
 
         self.ef = EfficientFrontier(self.mu, self.S)
+
         self.weights = self.optimize_portfolio()
 
         self.performance = self.ef.portfolio_performance(verbose=False)
@@ -63,9 +64,14 @@ class eff_alc:
             # High risk tolerance: Maximize Sharpe ratio
             self.ef.max_sharpe()
         else:
-            #dynamically calculate volatility based on user's designated risk tolerance
-            target_volatility = 0.1 + (self.risk_tolerance - 30) / 40 * (0.25 - 0.1)
-            self.ef.efficient_risk(target_volatility)
+            # Dynamically calculate volatility based on user risk
+            try:
+                target_volatility = 0.1 + (self.risk_tolerance - 30) / 40 * (0.25 - 0.1)
+                self.ef.efficient_risk(target_volatility)
+            except ValueError:
+                # Handle the error by calling min_volatility if a ValueError for target volatility occurs
+                self.ef.min_volatility()    
+            
         return self.ef.clean_weights()
 
     # Investment allocation method (based on weights)
@@ -75,7 +81,7 @@ class eff_alc:
         print(da.greedy_portfolio())
         return da.greedy_portfolio()
         
-    
+    # Historic return visualization methods
     def allocation_pie_graph(self,alc):
         data = {'stock':[x for x in alc.keys()],'segment':[x for x in alc.values()]}
         fig =  px.pie(data, values='segment', names='stock', title='Presumptive Allocation for Portfolio')
