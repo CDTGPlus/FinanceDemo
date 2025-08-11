@@ -17,6 +17,8 @@ pf_list = opt_backend.stock_parse(stocks)
 if st.button('Optimize Portfolio'):
     if  stocks and funds > 0:
         portfolio = opt_backend.combine_stocks(pf_list,start,end)
+        print("Here is the portfolio")
+        print(portfolio)
         investment = opt_backend.eff_alc(portfolio,funds,risk_tolerance)
         try:
         

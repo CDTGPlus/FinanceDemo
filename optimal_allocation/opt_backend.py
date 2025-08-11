@@ -3,6 +3,7 @@ import yfinance as yf
 # import datetime
 import plotly.express as px
 from functools import reduce
+import cvxpy
 from pypfopt.expected_returns import mean_historical_return
 from pypfopt.risk_models import CovarianceShrinkage
 from pypfopt.efficient_frontier import EfficientFrontier
@@ -18,8 +19,9 @@ def stock_parse(x):
 #extract closing price for stock using yahoo finance library
 def get_stock(ticker,start,end):
     try:
-        # data = yf.download(f'{ticker}',start=start,end=end)['Close'].to_frame(f'{ticker}')
+        #data = yf.download(f'{ticker}',start=start,end=end)['Close'].to_frame(f'{ticker}')
         data = yf.download(f'{ticker}',start=start,end=end)['Close']
+        # print(data)
     except ValueError as e:
         print(f"Error fetching data for {ticker}: {e}")
     return data 
@@ -43,7 +45,8 @@ class eff_alc:
         self.risk_tolerance = risk_tolerance
 
         self.mu = mean_historical_return(self.portfolio)
-        self.S = CovarianceShrinkage(self.portfolio).ledoit_wolf()
+        # self.S = CovarianceShrinkage(self.portfolio).ledoit_wolf()
+        self.S = portfolio.pct_change().dropna().cov()
 
         self.ef = EfficientFrontier(self.mu, self.S)
 
