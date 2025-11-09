@@ -34,8 +34,9 @@ if option == 'Amortization':
             st.write('Minimum Payment: $',str(amt.payment))
             st.write('Total paid: $',str(amt.total_amount_paid))
             st.write('Total Interest: $',str(amt.total_itr_paid))
-            
+            st.write('Loan Amortization Graph')
             st.plotly_chart(amt.generate_graph(df))
+            st.write('Payment Table')
             st.dataframe(df.style.format({col: '{:.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
         except ValueError as e:
             st.error(str(e))

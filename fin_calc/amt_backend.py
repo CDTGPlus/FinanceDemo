@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-#Amortization schedule class
+
 #Amortization schedule class
 class amortization_schedule:
 
@@ -72,6 +72,7 @@ class amortization_schedule:
         })
 
         schedule_df = schedule_df.set_index('Payment Number')
+        
         return schedule_df
 
     def generate_graph(self,df):
@@ -215,6 +216,13 @@ def process_input(data):
             alpha.append(var)
     return alpha
 
+# Format numeric values into currency value (string)
+def format_currency(df, columns, symbol='$'):
+    
+    for col in columns:
+        df[col] = df[col].map(lambda x: f"{symbol}{x:,.2f}" if pd.notnull(x) else x)
+    
+    return df
 
 
 
