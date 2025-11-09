@@ -1,3 +1,33 @@
+# past project files
 fed_economic_data.ipynb
 findata_dbCrt.ipynb
 stock_screener_fromdb.ipynb
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+build/
+dist/
+
+# Virtual environments (anywhere)
+.venv/
+venv/
+env/
+ENV/
+**/.venv/
+**/venv/
+**/env/
+
+# VS Code
+.vscode/
+
+# Env files
+.env
+.env.*
