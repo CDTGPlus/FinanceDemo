@@ -5,7 +5,7 @@ from amt_backend import *
 
 page_icon = ':money_with_wings:'
 st.set_page_config('Financial Calculator',page_icon=page_icon)
-#user enters financial caculation option
+#user enters financial calculation option
 option = st.sidebar.radio('Menu', ['Amortization','Annuity','NPV and IRR'])
 
 ent_default = 'Press Enter To Complete Data'
@@ -30,6 +30,7 @@ if option == 'Amortization':
     if principal and payment_period and interest:
         try:
             amt = amortization_schedule(principal,payment_period,interest,user_payment,freq)
+            
             df = amt.generate_schedule()
             st.write('Minimum Payment: $',str(amt.payment))
             st.write('Total paid: $',str(amt.total_amount_paid))
@@ -37,7 +38,9 @@ if option == 'Amortization':
             st.write('Loan Amortization Graph')
             st.plotly_chart(amt.generate_graph(df))
             st.write('Payment Table')
-            st.dataframe(df.style.format({col: '{:.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
+            # st.dataframe(df)
+            # st.dataframe(df.style.format({col: '{:.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
+            st.dataframe(df.style.format({col: '${:,.2f}' for col in df.columns if pd.api.types.is_float_dtype(df[col])}))
         except ValueError as e:
             st.error(str(e))
     else:

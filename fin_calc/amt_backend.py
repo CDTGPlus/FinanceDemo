@@ -4,7 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-
 #Amortization schedule class
 class amortization_schedule:
 
@@ -40,7 +39,7 @@ class amortization_schedule:
     def generate_schedule(self):
         # Initialize balance to the loan amount
         balance = self.loan_amount
-
+        
         # Generate amortization schedule
         for i in range(1, self.total_payments + 1):
             interest = balance * self.interest_rate
@@ -70,9 +69,10 @@ class amortization_schedule:
             'Total Paid': self.total_paid,
             'Remaining Balance': self.remaining_balance
         })
-
+        #set the last value of remaining valance to 0
+        schedule_df.loc[schedule_df.index[-1],'Remaining Balance'] = 0
         schedule_df = schedule_df.set_index('Payment Number')
-        
+  
         return schedule_df
 
     def generate_graph(self,df):
